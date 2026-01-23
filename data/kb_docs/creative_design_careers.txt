@@ -1,0 +1,125 @@
+# Creative & Design Career Paths - Comprehensive Guide 2026
+
+## Overview
+Creative careers blend artistic talent with technological skills. The design industry is evolving with AI tools, immersive technologies, and increasing demand for digital experiences.
+
+## Key Design Careers
+
+### 1. Architect
+- **Role**: Building design, planning, project management
+- **Education**: B.Arch + licensure
+- **Salary Range**: $55,000 - $150,000
+- **Growth**: Moderate (sustainable design focus)
+- **2026 Trends**:
+  - Sustainable/green architecture
+  - 3D visualization and VR walkthroughs
+  - Parametric design tools
+  - Smart building integration
+
+### 2. Interior Designer
+- **Role**: Space planning, aesthetic design, client consultation
+- **Education**: Bachelor's in Interior Design
+- **Salary Range**: $45,000 - $100,000
+- **Growth**: Moderate demand
+- **2026 Trends**:
+  - Biophilic design (nature integration)
+  - Smart home technology
+  - Sustainable materials
+  - Virtual staging services
+
+### 3. Graphic Designer
+- **Role**: Visual communication, branding, marketing materials
+- **Education**: BFA Graphic Design or portfolio
+- **Salary Range**: $45,000 - $90,000
+- **Growth**: Moderate (AI impact)
+- **2026 Trends**:
+  - AI design assistants (Midjourney, DALL-E)
+  - Motion graphics demand
+  - Brand identity specialization
+  - 3D design for metaverse
+
+### 4. UX/UI Designer
+- **Role**: User experience design, interface design, prototyping
+- **Education**: Design degree or bootcamp + portfolio
+- **Salary Range**: $70,000 - $150,000
+- **Growth**: High demand
+- **2026 Trends**:
+  - Voice UI design
+  - AR/VR experience design
+  - Accessibility-first design
+  - AI-powered personalization
+
+### 5. Fashion Designer
+- **Role**: Clothing design, trend forecasting, collection development
+- **Education**: Fashion design degree
+- **Salary Range**: $40,000 - $120,000
+- **Growth**: Moderate
+- **2026 Trends**:
+  - Sustainable fashion
+  - Digital fashion for avatars
+  - AI trend prediction
+  - Custom/on-demand production
+
+### 6. Industrial Designer
+- **Role**: Product design, prototyping, manufacturing coordination
+- **Education**: BS Industrial Design
+- **Salary Range**: $60,000 - $120,000
+- **Growth**: Moderate
+- **2026 Trends**:
+  - Sustainable product design
+  - 3D printing integration
+  - Human-centered design
+  - IoT product development
+
+## Creative Arts Careers
+
+### 1. Animator / Motion Designer
+- **Role**: Animation, visual effects, motion graphics
+- **Education**: Animation degree or self-taught portfolio
+- **Salary Range**: $50,000 - $120,000
+- **Growth**: High (streaming content)
+- **2026 Trends**:
+  - Real-time rendering (Unreal Engine)
+  - AI-assisted animation
+  - 3D character design
+  - Metaverse content creation
+
+### 2. Photographer / Videographer
+- **Role**: Visual content creation, editing, client work
+- **Education**: Photography/Film degree or experience
+- **Salary Range**: $35,000 - $100,000
+- **Growth**: Moderate (freelance heavy)
+- **2026 Trends**:
+  - Drone photography/videography
+  - 360-degree and VR content
+  - AI editing tools
+  - Social media content focus
+
+## Skills Required
+- **Creative**: Visual design, color theory, typography, composition
+- **Technical**: Design software (Adobe CC, Figma, Sketch)
+- **Communication**: Client presentation, feedback incorporation
+- **Business**: Project management, client relations, pricing
+
+## Software Proficiency
+- Adobe Creative Suite (Photoshop, Illustrator, InDesign)
+- Figma, Sketch, Adobe XD (UI/UX)
+- AutoCAD, Revit, SketchUp (Architecture)
+- Blender, Cinema 4D, Maya (3D)
+- After Effects, Premiere Pro (Motion)
+
+## Career Progression Path
+1. Junior Designer / Intern
+2. Designer / Creator
+3. Senior Designer
+4. Art Director / Lead Designer
+5. Creative Director
+6. Design Principal / Partner
+
+## Market Outlook 2026
+- AI tools augmenting not replacing designers
+- UX/UI demand highest among design fields
+- Sustainable design premium
+- Metaverse creating new design categories
+- Freelance and remote work dominant
+- Specialization increasingly valuable

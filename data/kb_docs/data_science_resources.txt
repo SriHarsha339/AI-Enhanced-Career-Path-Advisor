@@ -1,0 +1,55 @@
+Data Scientist - Market Analysis and Learning Resources
+
+Data Scientists extract insights from data to drive business decisions. They combine statistics, programming, and domain expertise.
+
+Role Overview:
+Data scientists work across industries analyzing business problems and building predictive models. They communicate findings to stakeholders and translate requirements into analytics solutions.
+
+Key Activities:
+- Exploratory data analysis and visualization
+- Statistical hypothesis testing
+- Building predictive models
+- Data storytelling and presentation
+- SQL and database queries
+- Python for data manipulation (Pandas, NumPy)
+- Visualization tools (Tableau, Power BI, Matplotlib)
+
+Market Insights 2026:
+- 25% growth in data science roles year-over-year
+- Increased demand for AI/ML knowledge
+- Privacy-preserving analytics becoming standard
+- Generative AI for synthetic data creation
+- Emphasis on AI ethics and bias detection
+
+Learning Resources:
+1. Online Platforms:
+   - Coursera: Google Data Analytics Certificate
+   - edX: Data Science MicroMasters
+   - DataCamp: Comprehensive data science tracks
+   - Udacity: Nanodegree programs
+
+2. Skills Development:
+   - Statistics fundamentals
+   - Python programming
+   - SQL databases
+   - Machine learning basics
+   - Data visualization
+   - Business acumen
+
+3. Portfolio Building:
+   - Kaggle competitions
+   - GitHub projects
+   - Personal blog/Medium articles
+   - Public datasets analysis
+   - Real-world case studies
+
+Certification Options:
+- Google Cloud Professional Data Engineer
+- AWS Certified Data Analytics Specialty
+- Microsoft Certified: Data Scientist Associate
+- IBM Data Science Professional Certificate
+
+Expected Timeline:
+- Career transition: 6-12 months intensive study
+- Entry-level position: After portfolio + certifications
+- Salary progression: $70K → $100K → $150K+ over 5-7 years

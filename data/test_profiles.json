@@ -1,0 +1,207 @@
+[
+  {
+    "profile_id": "test_ml_engineer",
+    "name": "Test Case: AI/ML Enthusiast",
+    "education": {
+      "degree": "Bachelor's",
+      "field": "Computer Science",
+      "university": "Top 10 University",
+      "gpa": "3.8"
+    },
+    "skills": [
+      "Python",
+      "Machine Learning",
+      "TensorFlow",
+      "Data Structures",
+      "Linear Algebra",
+      "SQL",
+      "Git"
+    ],
+    "interests": [
+      "Artificial Intelligence",
+      "Deep Learning",
+      "Neural Networks",
+      "Computer Vision",
+      "Natural Language Processing",
+      "AI Research"
+    ],
+    "projects": [
+      "Built CNN for image classification",
+      "Created chatbot using NLP",
+      "Contributed to open-source ML library"
+    ],
+    "preferences": {
+      "preferred_industries": ["Technology", "AI/ML"],
+      "acceptable_salary": 80000,
+      "willing_to_relocate": true,
+      "preferred_company_size": "Startup or Large"
+    },
+    "expected_top_recommendation": "Machine Learning Engineer"
+  },
+  {
+    "profile_id": "test_web_developer",
+    "name": "Test Case: Full-Stack Web Developer",
+    "education": {
+      "degree": "Bachelor's",
+      "field": "Information Technology",
+      "bootcamp": "Completed 3-month coding bootcamp",
+      "gpa": "3.5"
+    },
+    "skills": [
+      "JavaScript",
+      "React",
+      "Node.js",
+      "HTML/CSS",
+      "MongoDB",
+      "RESTful APIs",
+      "Docker",
+      "Git"
+    ],
+    "interests": [
+      "Web Development",
+      "Frontend Design",
+      "User Experience",
+      "Web3",
+      "Cloud Architecture",
+      "DevOps"
+    ],
+    "projects": [
+      "Built e-commerce website with React",
+      "Created backend API with Node.js",
+      "Deployed applications on AWS"
+    ],
+    "preferences": {
+      "preferred_industries": ["Technology", "Startups"],
+      "acceptable_salary": 70000,
+      "willing_to_relocate": false,
+      "preferred_company_size": "Startup"
+    },
+    "expected_top_recommendation": "Frontend Engineer or Full-Stack Developer"
+  },
+  {
+    "profile_id": "test_finance_analyst",
+    "name": "Test Case: Finance Professional",
+    "education": {
+      "degree": "Master's",
+      "field": "Finance",
+      "university": "Prestigious Finance Program",
+      "gpa": "3.9",
+      "certifications": ["CFA Level 1"]
+    },
+    "skills": [
+      "Financial Modeling",
+      "Excel",
+      "Python",
+      "Accounting",
+      "Risk Analysis",
+      "SQL",
+      "Bloomberg Terminal",
+      "Valuation Methods"
+    ],
+    "interests": [
+      "Investment Analysis",
+      "Corporate Finance",
+      "Risk Management",
+      "Market Research",
+      "AI in Finance",
+      "ESG Investing",
+      "Quantitative Analysis"
+    ],
+    "projects": [
+      "Created financial model for company valuation",
+      "Analyzed market trends for investment decisions",
+      "Built portfolio tracking system"
+    ],
+    "preferences": {
+      "preferred_industries": ["Finance", "Banking"],
+      "acceptable_salary": 120000,
+      "willing_to_relocate": true,
+      "preferred_company_size": "Large Corporation"
+    },
+    "expected_top_recommendation": "Financial Analyst"
+  },
+  {
+    "profile_id": "test_healthcare_professional",
+    "name": "Test Case: Healthcare Professional",
+    "education": {
+      "degree": "Bachelor's in Nursing",
+      "field": "Healthcare",
+      "university": "Accredited Nursing School",
+      "certifications": ["RN License", "BLS Certification"]
+    },
+    "skills": [
+      "Patient Care",
+      "Medical Knowledge",
+      "Communication",
+      "Clinical Assessment",
+      "EMR Systems",
+      "Health Data Analysis",
+      "Telemedicine",
+      "Compassion"
+    ],
+    "interests": [
+      "Patient Wellbeing",
+      "Medical Technology",
+      "Telehealth",
+      "Clinical Research",
+      "Healthcare Management",
+      "Mental Health Support",
+      "Healthcare Innovation"
+    ],
+    "projects": [
+      "Led patient education program",
+      "Implemented new clinical protocol",
+      "Volunteered in healthcare outreach"
+    ],
+    "preferences": {
+      "preferred_industries": ["Healthcare", "Medical"],
+      "acceptable_salary": 65000,
+      "willing_to_relocate": true,
+      "preferred_company_size": "Hospital or Clinic"
+    },
+    "expected_top_recommendation": "Nurse or Clinical Healthcare Professional"
+  },
+  {
+    "profile_id": "test_designer",
+    "name": "Test Case: Design Specialist",
+    "education": {
+      "degree": "Bachelor's in Design",
+      "field": "Graphic Design & UX/UI",
+      "portfolio_link": "https://portfolio.example.com",
+      "gpa": "3.7"
+    },
+    "skills": [
+      "UI/UX Design",
+      "Figma",
+      "Adobe XD",
+      "Prototyping",
+      "User Research",
+      "HTML/CSS",
+      "Design Thinking",
+      "Accessibility Design",
+      "Interaction Design"
+    ],
+    "interests": [
+      "User Experience",
+      "Interface Design",
+      "Design Systems",
+      "Accessibility",
+      "AI-powered Design",
+      "Motion Graphics",
+      "Design Innovation",
+      "Generative Design"
+    ],
+    "projects": [
+      "Redesigned mobile app interface",
+      "Created design system for startup",
+      "Won design competition"
+    ],
+    "preferences": {
+      "preferred_industries": ["Technology", "Design", "Creative"],
+      "acceptable_salary": 70000,
+      "willing_to_relocate": false,
+      "preferred_company_size": "Startup or Medium"
+    },
+    "expected_top_recommendation": "UX/UI Designer"
+  }
+]

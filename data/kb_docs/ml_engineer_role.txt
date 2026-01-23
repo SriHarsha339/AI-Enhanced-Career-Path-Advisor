@@ -1,0 +1,52 @@
+Machine Learning Engineer - Role Profile
+
+A Machine Learning Engineer combines software engineering with machine learning expertise to build, deploy, and maintain AI systems at scale. These professionals work at the intersection of data science and software engineering.
+
+Key Responsibilities:
+- Design and develop ML models for production environments
+- Create data pipelines and ETL processes
+- Implement model training and inference systems
+- Optimize models for performance and latency
+- Ensure reproducibility and versioning of ML experiments
+- Work with large-scale datasets and distributed systems
+- Collaborate with data scientists and backend engineers
+- Monitor model performance and detect drift
+- Implement MLOps practices and CI/CD for models
+
+Required Skills:
+- Strong programming skills (Python, Java, or C++)
+- Understanding of ML algorithms and frameworks
+- Data structures and algorithms expertise
+- System design and architecture knowledge
+- SQL and database management
+- Version control (Git)
+
+Preferred Skills:
+- PyTorch or TensorFlow experience
+- Docker and Kubernetes
+- Cloud platforms (AWS, GCP, Azure)
+- MLOps tools (MLflow, Airflow, Kubeflow)
+- Distributed computing frameworks (Spark)
+- Model deployment and serving experience
+
+Market Demand:
+ML Engineers are in extremely high demand across all industries. The field is growing at 15-20% annually. Companies globally are investing heavily in AI/ML capabilities.
+
+Salary Range:
+Entry-level: $80,000-$100,000
+Mid-level: $120,000-$150,000
+Senior: $150,000-$200,000+
+
+Career Growth:
+- ML Engineer → Senior ML Engineer → ML Tech Lead → VP Engineering
+- ML Engineer → ML Researcher
+- ML Engineer → ML Platform Engineer
+- ML Engineer → ML Product Manager
+
+2026 Trends:
+- Multimodal AI systems
+- Small Language Models (SLMs)
+- Agentic AI and autonomous systems
+- Edge AI deployment
+- Responsible AI and interpretability
+- Foundation model fine-tuning
