@@ -11,6 +11,7 @@ import logging
 import sys
 import asyncio
 import hashlib
+import os
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 from datetime import datetime
@@ -32,51 +33,119 @@ logger = logging.getLogger(__name__)
 # ============= Ollama LLM Configuration =============
 
 OLLAMA_BASE_URL = "http://localhost:11434"
-OLLAMA_MODEL = "qwen2.5:7b-instruct"  # or llama3.2, mistral, etc.
-OLLAMA_TIMEOUT = 120
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gpt-oss:20b-cloud")  # or llama3.2, mistral, etc.
+OLLAMA_CONNECT_TIMEOUT = int(os.getenv("OLLAMA_CONNECT_TIMEOUT", "10"))
+OLLAMA_READ_TIMEOUT = int(os.getenv("OLLAMA_READ_TIMEOUT", "300"))
+OLLAMA_MAX_RETRIES = int(os.getenv("OLLAMA_MAX_RETRIES", "2"))
+OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "30m")
 
-def check_ollama_available() -> bool:
-    """Check if Ollama is running and model is available."""
-    try:
-        response = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=5)
-        return response.status_code == 200
-    except:
-        return False
 
-def call_ollama(prompt: str, system_prompt: str = "", temperature: float = 0.7) -> str:
-    """Call Ollama LLM with the given prompt."""
+def _model_name_matches(available_name: str, required_name: str) -> bool:
+    """Match model names safely when tags or aliases differ."""
+    if available_name == required_name:
+        return True
+    required_base = required_name.split(":", 1)[0]
+    available_base = available_name.split(":", 1)[0]
+    return required_base == available_base
+
+
+async def _warmup_ollama_model() -> None:
+    """Warm up model after a timeout so subsequent calls are faster."""
     try:
-        messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
-        
-        response = requests.post(
-            f"{OLLAMA_BASE_URL}/api/chat",
+        await asyncio.to_thread(
+            requests.post,
+            f"{OLLAMA_BASE_URL}/api/generate",
             json={
                 "model": OLLAMA_MODEL,
-                "messages": messages,
-                "temperature": temperature,
+                "prompt": "ping",
                 "stream": False,
-                "options": {"num_ctx": 4096}
+                "keep_alive": OLLAMA_KEEP_ALIVE,
+                "options": {"num_predict": 1}
             },
-            timeout=OLLAMA_TIMEOUT
+            timeout=(OLLAMA_CONNECT_TIMEOUT, min(30, OLLAMA_READ_TIMEOUT))
         )
-        
-        if response.status_code == 200:
-            return response.json().get("message", {}).get("content", "")
-        else:
-            logger.error(f"Ollama error: {response.status_code}")
-            return ""
-    except Exception as e:
-        logger.error(f"Ollama call failed: {e}")
-        return ""
+    except Exception:
+        # Warm-up is best-effort only.
+        pass
 
-def call_ollama_json(prompt: str, system_prompt: str = "") -> Dict[str, Any]:
+async def check_ollama_available() -> bool:
+    """Check if Ollama is running and model is available."""
+    try:
+        response = await asyncio.to_thread(requests.get, f"{OLLAMA_BASE_URL}/api/tags", timeout=5)
+        if response.status_code != 200:
+            return False
+
+        payload = response.json() if response.content else {}
+        models = payload.get("models", []) if isinstance(payload, dict) else []
+        if models:
+            model_names = [m.get("name", "") for m in models if isinstance(m, dict)]
+            if not any(_model_name_matches(name, OLLAMA_MODEL) for name in model_names):
+                logger.warning(
+                    "Ollama is running but requested model '%s' was not found in installed models.",
+                    OLLAMA_MODEL,
+                )
+                return False
+
+        return True
+    except requests.RequestException:
+        return False
+
+async def call_ollama(prompt: str, system_prompt: str = "", temperature: float = 0.7) -> str:
+    """Call Ollama LLM with the given prompt."""
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append({"role": "user", "content": prompt})
+
+    for attempt in range(OLLAMA_MAX_RETRIES + 1):
+        try:
+            response = await asyncio.to_thread(
+                requests.post,
+                f"{OLLAMA_BASE_URL}/api/chat",
+                json={
+                    "model": OLLAMA_MODEL,
+                    "messages": messages,
+                    "temperature": temperature,
+                    "stream": False,
+                    "keep_alive": OLLAMA_KEEP_ALIVE,
+                    "options": {"num_ctx": 4096}
+                },
+                timeout=(OLLAMA_CONNECT_TIMEOUT, OLLAMA_READ_TIMEOUT)
+            )
+
+            if response.status_code == 200:
+                return response.json().get("message", {}).get("content", "")
+
+            logger.error(
+                "Ollama error status=%s model=%s body=%s",
+                response.status_code,
+                OLLAMA_MODEL,
+                response.text[:300],
+            )
+            return ""
+
+        except requests.exceptions.ReadTimeout as exc:
+            if attempt < OLLAMA_MAX_RETRIES:
+                logger.warning(
+                    "Ollama read timeout (attempt %s/%s). Warming model and retrying.",
+                    attempt + 1,
+                    OLLAMA_MAX_RETRIES + 1,
+                )
+                await _warmup_ollama_model()
+                continue
+            logger.error("Ollama read timeout after retries: %s", exc)
+            return ""
+        except requests.exceptions.RequestException as exc:
+            logger.error("Ollama request failed: %s", exc)
+            return ""
+
+    return ""
+
+async def call_ollama_json(prompt: str, system_prompt: str = "") -> Dict[str, Any]:
     """Call Ollama and parse JSON response."""
     full_system = system_prompt + "\n\nIMPORTANT: Respond ONLY with valid JSON. No markdown, no explanation, just the JSON object."
     
-    response = call_ollama(prompt, full_system, temperature=0.3)
+    response = await call_ollama(prompt, full_system, temperature=0.3)
     
     # Try to extract JSON from response
     try:
@@ -414,9 +483,9 @@ Respond ONLY with a valid JSON array (no markdown, no explanation):
     ... (exactly 5 careers)
 ]"""
 
-    if check_ollama_available():
+    if await check_ollama_available():
         try:
-            llm_response = call_ollama(prompt, system_prompt, temperature=0.3)
+            llm_response = await call_ollama(prompt, system_prompt, temperature=0.3)
             # Clean and parse JSON
             cleaned = re.sub(r'```json?\s*', '', llm_response)
             cleaned = re.sub(r'```\s*', '', cleaned)
@@ -604,8 +673,8 @@ Respond with JSON in this exact format (focus ONLY on {top_career} and {top_cate
     "alternativeCareers": ["alt1", "alt2"]
 }}"""
     
-    if check_ollama_available():
-        llm_response = call_ollama_json(prompt, system_prompt)
+    if await check_ollama_available():
+        llm_response = await call_ollama_json(prompt, system_prompt)
         if llm_response:
             return llm_response
     
@@ -646,8 +715,8 @@ Include a mix of:
 2-3 core skill courses for {career}
 1-2 advanced/specialization courses for {career}"""
     
-    if check_ollama_available():
-        llm_response = call_ollama(prompt, system_prompt, temperature=0.5)
+    if await check_ollama_available():
+        llm_response = await call_ollama(prompt, system_prompt, temperature=0.5)
         try:
             # Try to parse JSON from response
             cleaned = re.sub(r'```json?\s*', '', llm_response)
@@ -1248,8 +1317,8 @@ IMPORTANT:
     
     roadmap = base_roadmap  # Start with education-based roadmap
     
-    if check_ollama_available():
-        llm_response = call_ollama(prompt, system_prompt, temperature=0.5)
+    if await check_ollama_available():
+        llm_response = await call_ollama(prompt, system_prompt, temperature=0.5)
         try:
             cleaned = re.sub(r'```json?\s*', '', llm_response)
             cleaned = re.sub(r'```\s*', '', cleaned)
@@ -1335,8 +1404,8 @@ async def generate_news_insights(career: str, articles: List[Dict]) -> str:
 
 Provide a 2-3 sentence market insight summary for job seekers. Be specific and actionable."""
     
-    if check_ollama_available():
-        insight = call_ollama(prompt, system_prompt, temperature=0.7)
+    if await check_ollama_available():
+        insight = await call_ollama(prompt, system_prompt, temperature=0.7)
         if insight:
             return insight[:500]
     
@@ -1349,7 +1418,7 @@ query_counter = {"id": 0}
 
 @app.get("/api/health")
 async def health_check():
-    ollama_status = "connected" if check_ollama_available() else "unavailable"
+    ollama_status = "connected" if await check_ollama_available() else "unavailable"
     return {
         "status": "healthy",
         "version": "3.0.0",
@@ -1373,15 +1442,15 @@ async def get_recommendation(request: CareerQueryRequest):
             matched_careers = [{"title": "Career Consultant", "salary": "₹5-15 LPA", 
                                "demand": "Medium", "growth": "10%", "category": "general"}]
         
-        # Generate LLM-powered analysis
-        llm_analysis = await generate_llm_recommendation(request, matched_careers)
-        
-        # Generate dynamic roadmap for TOP career (main roadmap)
-        main_roadmap = await generate_dynamic_roadmap(matched_careers[0]["title"], request.educationLevel)
-        
-        # Fetch news insights
-        news_articles = fetch_google_news(matched_careers[0]["title"])
-        news_insight = await generate_news_insights(matched_careers[0]["title"], news_articles)
+# Fetch news in background
+        news_articles = await asyncio.to_thread(fetch_google_news, matched_careers[0]["title"])
+
+        # Run LLM tasks concurrently (if Ollama supports it, otherwise it queues them, which is still correct)
+        llm_analysis, main_roadmap, news_insight = await asyncio.gather(
+            generate_llm_recommendation(request, matched_careers),
+            generate_dynamic_roadmap(matched_careers[0]["title"], request.educationLevel),
+            generate_news_insights(matched_careers[0]["title"], news_articles)
+        )
         
         # Build landscape data with INDIVIDUAL roadmaps for each career
         landscape = []
@@ -1465,7 +1534,7 @@ async def get_recommendation(request: CareerQueryRequest):
             queryId=query_counter["id"],
             recommendation=recommendation_md,
             structuredData=StructuredData(**structured_data),
-            llmPowered=check_ollama_available()
+            llmPowered=await check_ollama_available()
         )
         
     except Exception as e:
@@ -1476,7 +1545,7 @@ async def get_recommendation(request: CareerQueryRequest):
 async def get_career_news(career: str):
     """Get latest news and insights for a specific career."""
     try:
-        articles = fetch_google_news(career, num_results=8)
+        articles = await asyncio.to_thread(fetch_google_news, career, num_results=8)
         insights = await generate_news_insights(career, articles)
         
         return NewsResponse(
@@ -1600,12 +1669,12 @@ Question: {message}
 IMPORTANT: Location questions about colleges/jobs are VALID career questions - answer them!
 Give a SHORT response (under 100 words). Use colored HTML spans."""
     
-    if check_ollama_available():
-        response = call_ollama(prompt, system_prompt, temperature=0.7)
+    if await check_ollama_available():
+        response = await call_ollama(prompt, system_prompt, temperature=0.7)
         if response:
             # Generate follow-up questions
             followup_prompt = f"Based on this conversation about {selected_role or 'careers'}, suggest 3 brief follow-up questions the user might ask. Return as JSON array: [\"q1\", \"q2\", \"q3\"]"
-            followup_response = call_ollama(followup_prompt, "Respond with JSON array only", temperature=0.8)
+            followup_response = await call_ollama(followup_prompt, "Respond with JSON array only", temperature=0.8)
             
             suggestions = []
             try:
@@ -1730,6 +1799,8 @@ if __name__ == "__main__":
     print("=" * 60)
     print(f"📡 API: http://localhost:8000")
     print(f"📚 Docs: http://localhost:8000/docs")
-    print(f"🤖 LLM: {'Connected' if check_ollama_available() else 'Not Available - using fallback'}")
+    print(f"🧠 Model: {OLLAMA_MODEL}")
+    print(f"⏱️ Ollama read timeout: {OLLAMA_READ_TIMEOUT}s")
+    print(f"🤖 LLM: {'Connected' if asyncio.run(check_ollama_available()) else 'Not Available - using fallback'}")
     print("=" * 60)
     uvicorn.run(app, host="0.0.0.0", port=8000)

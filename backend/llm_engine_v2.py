@@ -22,9 +22,9 @@ class CareerLLMEngine:
     def __init__(
         self,
         base_url: str = "http://localhost:11434",
-        model: str = "qwen2.5:7b-instruct",
-        temperature: float = 0.7,
-        timeout: int = 300
+        model: str = "gpt-oss:20b-cloud",
+        temperature: float = 0.5,
+        timeout: int = 200
     ):
         self.base_url = base_url
         self.model = model

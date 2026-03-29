@@ -26,10 +26,13 @@ FAISS_INDEX_FILE = RAG_INDEX_DIR / "career_index.faiss"
 FAISS_METADATA_FILE = RAG_INDEX_DIR / "metadata.json"
 
 # Ollama Configuration
-OLLAMA_BASE_URL = "http://localhost:11434"
-OLLAMA_MODEL = "qwen2.5:7b-instruct"
-OLLAMA_TIMEOUT = 60
-OLLAMA_TEMPERATURE = 0.2
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gpt-oss:20b-cloud")
+OLLAMA_TIMEOUT = int(os.getenv("OLLAMA_READ_TIMEOUT", os.getenv("OLLAMA_TIMEOUT", "200")))
+OLLAMA_CONNECT_TIMEOUT = int(os.getenv("OLLAMA_CONNECT_TIMEOUT", "10"))
+OLLAMA_MAX_RETRIES = int(os.getenv("OLLAMA_MAX_RETRIES", "2"))
+OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "30m")
+OLLAMA_TEMPERATURE = float(os.getenv("OLLAMA_TEMPERATURE", "0.2"))
 
 # Scoring Configuration
 TOP_N_RESULTS = 5

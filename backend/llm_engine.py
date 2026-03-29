@@ -9,6 +9,9 @@ from backend.config import (
     OLLAMA_BASE_URL,
     OLLAMA_MODEL,
     OLLAMA_TIMEOUT,
+    OLLAMA_CONNECT_TIMEOUT,
+    OLLAMA_MAX_RETRIES,
+    OLLAMA_KEEP_ALIVE,
     OLLAMA_TEMPERATURE
 )
 
@@ -21,12 +24,35 @@ class OllamaEngine:
         base_url: str = OLLAMA_BASE_URL,
         model: str = OLLAMA_MODEL,
         temperature: float = OLLAMA_TEMPERATURE,
-        timeout: int = OLLAMA_TIMEOUT
+        timeout: int = OLLAMA_TIMEOUT,
+        connect_timeout: int = OLLAMA_CONNECT_TIMEOUT,
+        max_retries: int = OLLAMA_MAX_RETRIES,
+        keep_alive: str = OLLAMA_KEEP_ALIVE,
     ):
         self.base_url = base_url
         self.model = model
         self.temperature = temperature
         self.timeout = timeout
+        self.connect_timeout = connect_timeout
+        self.max_retries = max_retries
+        self.keep_alive = keep_alive
+
+    def _warmup_model(self) -> None:
+        """Best-effort model warmup to avoid first-call timeout spikes."""
+        try:
+            requests.post(
+                f"{self.base_url}/api/generate",
+                json={
+                    "model": self.model,
+                    "prompt": "ping",
+                    "stream": False,
+                    "keep_alive": self.keep_alive,
+                    "options": {"num_predict": 1},
+                },
+                timeout=(self.connect_timeout, min(30, self.timeout)),
+            )
+        except requests.exceptions.RequestException:
+            pass
 
     def _check_ollama_running(self) -> bool:
         """Check if Ollama server is running."""
@@ -42,7 +68,7 @@ class OllamaEngine:
     def chat(
         self,
         messages: List[Dict[str, str]],
-        max_retries: int = 2
+        max_retries: int = None
     ) -> str:
         """
         Call Ollama chat endpoint with retry logic for JSON parsing.
@@ -51,7 +77,7 @@ class OllamaEngine:
         if not self._check_ollama_running():
             raise RuntimeError(
                 f"Ollama not running at {self.base_url}. "
-                "Please start Ollama and pull the model: ollama pull qwen2.5:7b-instruct"
+                "Please start Ollama and pull the model: ollama pull gpt-oss:20b-cloud"
             )
         
         # Try /api/chat first, fallback to /api/generate
@@ -60,7 +86,9 @@ class OllamaEngine:
         current_messages = messages.copy()
         content = ""
         
-        for attempt in range(max_retries + 1):
+        effective_retries = self.max_retries if max_retries is None else max_retries
+
+        for attempt in range(effective_retries + 1):
             try:
                 response = requests.post(
                     url,
@@ -69,11 +97,12 @@ class OllamaEngine:
                         "messages": current_messages,
                         "temperature": self.temperature,
                         "stream": False,
+                        "keep_alive": self.keep_alive,
                         "options": {
                             "num_ctx": 4096
                         }
                     },
-                    timeout=self.timeout
+                    timeout=(self.connect_timeout, self.timeout)
                 )
                 
                 # If chat fails, try generate endpoint
@@ -90,8 +119,17 @@ class OllamaEngine:
                 
                 return content
                 
+            except requests.exceptions.ReadTimeout as e:
+                if attempt < effective_retries:
+                    self._warmup_model()
+                    continue
+                # Try fallback generate as last resort
+                try:
+                    return self._fallback_generate(messages)
+                except requests.exceptions.RequestException:
+                    raise RuntimeError(f"Ollama request timed out: {e}")
             except requests.exceptions.RequestException as e:
-                if attempt == max_retries:
+                if attempt == effective_retries:
                     # Try fallback generate as last resort
                     try:
                         return self._fallback_generate(messages)
@@ -131,11 +169,12 @@ class OllamaEngine:
                 "prompt": prompt,
                 "temperature": self.temperature,
                 "stream": False,
+                "keep_alive": self.keep_alive,
                 "options": {
                     "num_ctx": 4096
                 }
             },
-            timeout=self.timeout
+            timeout=(self.connect_timeout, self.timeout)
         )
         response.raise_for_status()
         
